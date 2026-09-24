@@ -1,6 +1,6 @@
 USE streamvault;
 
--- 1. SUBSCRIPTION PLANS
+-- subscription plans
 INSERT INTO subscription_plans
 (plan_name, price, duration, max_devices, video_quality)
 VALUES
@@ -11,7 +11,7 @@ VALUES
 
 SELECT * FROM subscription_plans;
 
--- 2. USER SUBSCRIPTIONS
+-- subscription
 INSERT INTO subscription
 (user_id, plan_id, start_date, end_date, status)
 VALUES
@@ -28,18 +28,5 @@ VALUES
 
 SELECT * FROM subscription;
 
-SELECT
-    s.subs_id,
-    u.full_name,
-    sp.plan_name,
-    sp.price,
-    s.start_date,
-    s.end_date,
-    s.status
-FROM subscription s
-JOIN user u
-    ON s.user_id = u.user_id
-JOIN subscription_plans sp
-    ON s.plan_id = sp.plan_id
-ORDER BY s.subs_id;
+
 

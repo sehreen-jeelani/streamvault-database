@@ -1,6 +1,6 @@
 USE streamvault;
 
--- 1. USERS
+-- users
 INSERT INTO user
 (full_name, email, password_hash, contact, date_of_birth)
 VALUES
@@ -17,45 +17,25 @@ VALUES
 
 SELECT * FROM user;
 
--- PROFILES
-INSERT INTO profiles
-(user_id, profile_name)
-VALUES
+-- profiles
+INSERT INTO profiles (user_id, profile_name) VALUES
 (1, 'Aarav'),
 (1, 'Kids'),
-
 (2, 'Meera'),
 (2, 'Family'),
-
 (3, 'Zoya'),
-
 (4, 'Rohan'),
-
 (5, 'Mehak'),
 (5, 'Kids'),
-
 (6, 'Kabir'),
-
 (7, 'Sara'),
 (7, 'Family'),
-
 (8, 'Arjun'),
-
 (9, 'Hiba'),
-
 (10, 'Aditya'),
 (10, 'Kids');
 
 SELECT * FROM profiles;
 
--- 3. TEST THE RELATIONSHIP
-SELECT
-    u.user_id,
-    u.full_name,
-    p.profile_id,
-    p.profile_name
-FROM user u
-JOIN profiles p
-    ON u.user_id = p.user_id
-ORDER BY u.user_id, p.profile_id;
+
 
