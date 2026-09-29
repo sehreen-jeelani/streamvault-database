@@ -3,8 +3,9 @@ USE streamvault;
 SELECT  * FROM content 
 WHERE duration_min = (SELECT MAX(duration_min) FROM content); 
 
-SELECT  * FROM content 
-WHERE duration_min > (SELECT AVG(duration_min) FROM content); 
+SELECT * FROM content
+WHERE type = 'Movie'
+AND duration_min > (SELECT AVG(duration_min) FROM content WHERE type = 'Movie');
 
 SELECT user.user_id,user.full_name
 FROM user
@@ -19,14 +20,18 @@ WHERE ratings.rate > (SELECT AVG(rate) FROM ratings);
 SELECT plan_name,price FROM subscription_plans
 WHERE price = (SELECT MAX(price) FROM subscription_plans);
 
-SELECT user.user_id,user.full_name
-FROM user
-INNER JOIN subscription ON user.user_id = subscription.user_id
-GROUP BY user.user_id,user.full_name HAVING (subscription.status = 'Active');
+SELECT user_id, full_name
+FROM user u
+WHERE EXISTS (SELECT 1 FROM subscription s
+WHERE s.user_id = u.user_id AND s.status = 'Active');
 
-SELECT content_id, COUNT(*) AS watch_count
-FROM watch_history
-GROUP BY content_id;
+SELECT c.title, COUNT(*) AS watch_count
+FROM content c
+INNER JOIN watch_history w ON c.content_id = w.content_id
+GROUP BY c.content_id, c.title
+HAVING COUNT(*) > (SELECT AVG(watch_count) 
+FROM (SELECT content_id, COUNT(*) AS watch_count
+FROM watch_history GROUP BY content_id) AS watch_counts);
 
 SELECT title,duration_min,
 CASE WHEN duration_min < 110 THEN 'Short' 
@@ -38,7 +43,7 @@ WHERE type = 'Movie';
 
 SELECT title,type,
 CASE WHEN type = 'Movie' THEN 'Movie Content' 
-WHEN type = 'TV Show'THEN 'TV Shows' 
+WHEN type = 'TV Show'THEN 'Series Content' 
 END AS content_category
 FROM content; 
 
@@ -60,33 +65,29 @@ FROM payment;
 
 SELECT user_id,full_name
 FROM user u
-WHERE EXISTS (
- SELECT 1
- FROM profiles p
- WHERE p.user_id = u.user_id);
+WHERE EXISTS (SELECT 1
+FROM profiles p
+WHERE p.user_id = u.user_id);
 
 SELECT content_id,title
 FROM content c
-WHERE EXISTS (
- SELECT 1 
- FROM watchlist l
- WHERE l.content_id = c.content_id);
+WHERE EXISTS (SELECT 1 
+FROM watchlist l
+WHERE l.content_id = c.content_id);
 
 SELECT user_id,full_name
 FROM user u
-WHERE EXISTS (
- SELECT 1
- FROM payment p
- WHERE p.user_id = u.user_id 
- AND p.pay_status = 'Successful' );
+WHERE EXISTS (SELECT 1
+FROM payment p
+WHERE p.user_id = u.user_id 
+AND p.pay_status = 'Successful' );
 
 SELECT content_id,title
 FROM content c
-WHERE EXISTS (
-SELECT 1 
+WHERE EXISTS (SELECT 1 
 FROM ratings r
 WHERE r.content_id = c.content_id
-AND r.rate = '5' );
+AND r.rate = 5 );
 
 WITH ContentRatings AS (
 SELECT content_id, AVG(rate) AS avg_rating
@@ -108,8 +109,7 @@ WITH profit AS (
 SELECT subs_id, SUM(amount) AS total_revenue
 FROM payment
 WHERE pay_status = 'Successful'
-GROUP BY subs_id
-)
+GROUP BY subs_id)
 SELECT subscription_plans.plan_name,profit.total_revenue
 FROM profit
 INNER JOIN subscription ON profit.subs_id = subscription.subs_id
@@ -123,3 +123,70 @@ SELECT u.full_name,p.profile_count
 FROM user u
 JOIN profileCOUNT p ON u.user_id = p.user_id
 AND p.profile_count > 1;
+
+SELECT content.title,ratings.rate,
+AVG(ratings.rate) OVER() AS overall_average
+FROM content
+INNER JOIN ratings ON content.content_id = ratings.content_id;
+
+SELECT content.title,AVG(ratings.rate) AS average_rating,
+RANK() OVER(ORDER BY AVG(ratings.rate) DESC) AS rating_rank
+FROM content
+INNER JOIN ratings ON content.content_id = ratings.content_id
+GROUP BY content.content_id, content.title;
+
+SELECT content.title,COUNT(watch_history.watch_hist_id) AS watch_count,
+RANK() OVER(ORDER BY COUNT(watch_history.watch_hist_id) DESC) AS watched_rank
+FROM content
+INNER JOIN watch_history ON content.content_id = watch_history.content_id
+GROUP BY content.content_id, content.title;
+
+SELECT user.full_name,subscription_plans.plan_name,
+ROW_NUMBER() OVER(PARTITION BY user.user_id 
+ORDER BY subscription.start_date) AS row_num
+FROM user
+INNER JOIN subscription ON user.user_id = subscription.user_id
+INNER JOIN subscription_plans ON subscription.plan_id = subscription_plans.plan_id;
+
+SELECT content.title,ratings.rate,
+AVG(ratings.rate) OVER(PARTITION BY content.content_id) AS content_average
+FROM content
+INNER JOIN ratings ON content.content_id = ratings.content_id;
+
+SELECT content.title,AVG(ratings.rate) AS average_rating
+FROM content
+INNER JOIN ratings ON content.content_id = ratings.content_id
+GROUP BY content.content_id,content.title
+ORDER BY average_rating DESC LIMIT 1;
+
+SELECT content.title,COUNT(watch_history.watch_hist_id) AS watch_count
+FROM content
+INNER JOIN watch_history ON content.content_id = watch_history.content_id
+GROUP BY content.content_id, content.title
+ORDER BY watch_count DESC
+LIMIT 1;
+
+SELECT user.full_name,COUNT(profiles.profile_id) AS profile_count
+FROM user
+INNER JOIN profiles ON user.user_id = profiles.user_id
+GROUP BY user.user_id,user.full_name ORDER BY profile_count DESC LIMIT 1;
+
+SELECT subscription_plans.plan_name,SUM(payment.amount) AS total_payment
+FROM payment
+INNER JOIN subscription ON payment.subs_id = subscription.subs_id
+INNER JOIN subscription_plans ON subscription.plan_id = subscription_plans.plan_id
+WHERE payment.pay_status = 'Successful'
+GROUP BY subscription_plans.plan_name
+ORDER BY total_payment DESC LIMIT 1;
+
+SELECT content.type,AVG(ratings.rate) AS average_rating
+FROM content
+INNER JOIN ratings ON content.content_id = ratings.content_id
+GROUP BY content.type;
+
+SELECT content.title,COUNT(watch_history.watch_hist_id) AS watch_count
+FROM content
+INNER JOIN watch_history ON content.content_id = watch_history.content_id
+GROUP BY content.content_id, content.title
+ORDER BY watch_count DESC
+LIMIT 3;
