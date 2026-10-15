@@ -28,8 +28,7 @@ COUNT(DISTINCT subscription.user_id) AS subs_count
 FROM subscription
 INNER JOIN subscription_plans ON subscription.plan_id = subscription_plans.plan_id
 GROUP BY subscription_plans.plan_id,subscription_plans.plan_name
-ORDER BY subs_count DESC
-LIMIT 1;
+ORDER BY subs_count DESC LIMIT 1;
 
 SELECT ROUND(AVG(price), 2) AS average_plan_price
 FROM subscription_plans;
@@ -121,3 +120,18 @@ SELECT DISTINCT u.user_id,u.full_name
 FROM user u
 INNER JOIN profiles p ON u.user_id = p.user_id
 INNER JOIN watchlist w ON p.profile_id = w.profile_id;
+
+SELECT ROUND(SUM(amount), 2) AS total_successful_revenue
+FROM payment
+WHERE pay_status = 'Successful';
+
+SELECT sp.plan_name,ROUND(SUM(p.amount), 2) 
+AS total_successful_revenue,
+RANK() OVER (ORDER BY SUM(p.amount) DESC)
+AS revenue_rank
+FROM subscription_plans sp
+INNER JOIN subscription s ON sp.plan_id = s.plan_id
+INNER JOIN payment p ON s.subs_id = p.subs_id
+WHERE p.pay_status = 'Successful'
+GROUP BY sp.plan_id, sp.plan_name
+ORDER BY total_successful_revenue DESC;
