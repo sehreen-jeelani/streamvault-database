@@ -98,9 +98,10 @@ SELECT content.title, ratings.rate
 FROM content
 LEFT JOIN ratings ON content.content_id = ratings.content_id;
 
-SELECT content.title,watch_history.content_id
-FROM content 
-LEFT JOIN watch_history ON watch_history.content_id = content.content_id;
+SELECT content.title, watch_history.watch_hist_id
+FROM content
+LEFT JOIN watch_history
+ON watch_history.content_id = content.content_id;
 
 SELECT content.title,watchlist.content_id
 FROM content 

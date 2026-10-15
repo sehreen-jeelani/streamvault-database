@@ -7,7 +7,7 @@ SELECT AVG(profile_count) AS average_profiles_per_user
 FROM (SELECT user_id, COUNT(*) AS profile_count
 FROM profiles GROUP BY user_id) AS user_profiles;
 
-SELECT COUNT(DISTINCT user_id) AS active_users
+SELECT COUNT(DISTINCT user_id) AS active_subs_users
 FROM subscription
 WHERE status = 'Active';
 
@@ -31,7 +31,7 @@ GROUP BY subscription_plans.plan_id,subscription_plans.plan_name
 ORDER BY subs_count DESC
 LIMIT 1;
 
-SELECT AVG(price) AS average_price
+SELECT ROUND(AVG(price), 2) AS average_plan_price
 FROM subscription_plans;
 
 SELECT COUNT(*) AS total_content
