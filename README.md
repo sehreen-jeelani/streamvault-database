@@ -6,17 +6,18 @@
 
 > 🚧 **Project Status: In Progress**
 
-StreamVault is an ongoing **MySQL relational database project** modeling the backend of a subscription based streaming platform. It focuses on **database design, relational modeling, SQL querying, and business analysis** across a 16 table schema.
+StreamVault is a MySQL relational database project modeling the backend of a subscription-based streaming platform. It focuses on database design, relational modeling, SQL querying, database automation, performance optimization, and business analysis across a **17 table schema (16 core tables and 1 activity audit table)**.
 
 ---
 
 ## 🏗️ Architecture
 
-The database spans three core operational domains:
+The database is organized into three core operational domains, with a separate audit logging component:
 
 - **Users & Subscriptions:** `user`, `profiles`, `subscription_plans`, `subscription`, `payment`
 - **Content Catalog:** `content`, `episodes`, `genres`, `actors`, `director`, `content_genres`, `content_actor`, `content_directors`
 - **Activity & Engagement:** `watch_history`, `ratings`, `watchlist`
+- **Activity Auditing:** `activity_audit` Records selected database activities through triggers.
 
 ```text
 user ──1:N──> profiles
@@ -41,7 +42,8 @@ profiles ──1:N──> watch_history | ratings | watchlist
 | **User & Billing** | `user`, `profiles`, `subscription_plans`, `subscription`, `payment` | Primary & Foreign Keys, `ENUM`, `UNIQUE` constraints |
 | **Catalog** | `content`, `episodes`, `genres`, `actors`, `director` | Relational modeling, constraints |
 | **Junctions** | `content_genres`, `content_actor`, `content_directors` | M:N relationship mapping |
-| **Activity** | `watch_history`, `ratings`, `watchlist` | Viewing, rating, and saved-content records |
+| **Activity & Engagement** | `watch_history`, `ratings`, `watchlist` | Tracks viewing history, ratings, and saved content. |
+| **Audit Logging** | `activity_audit` | Stores records of selected database activities through triggers. |
 
 ---
 
@@ -69,17 +71,19 @@ cd streamvault-database
 Create the database in MySQL:
 
 ```sql
-CREATE DATABASE streamvault;
+CREATE DATABASE IF NOT EXISTS streamvault;
 USE streamvault;
 ```
 
-Then execute the SQL files in:
+Execute the SQL scripts in the following order:
 
-```text
-database/schema/
-database/data/
-database/queries/
-```
+1. `database/schema/` — Create tables and relationships.
+2. `database/data/` — Insert sample records.
+3. `database/views/` — Create database views.
+4. `database/procedures/` — Create stored procedures.
+5. `database/triggers/` — Create audit tables and triggers.
+6. `database/indexes/` — Create performance indexes.
+7. `database/queries/` — Run SQL queries for testing and analysis.
 
 > **Note:** The project uses MySQL directly and does not require XAMPP.
 
@@ -87,14 +91,20 @@ database/queries/
 
 ## 🚧 Current Status
 
-- ✅ 16-table relational schema
+- ✅ 17-table relational schema (16 core tables + 1 audit table)
 - ✅ Sample data
-- ✅ Basic SQL
+- ✅ Basic SQL queries
 - ✅ Aggregate queries
-- ✅ JOIN queries
-- ✅ Advanced SQL
-- 🚧 Business analysis in progress
-- 🔮 Views, procedures, triggers & indexing planned
+- ✅ Multi-table JOIN queries
+- ✅ Advanced SQL queries
+- ✅ Business analysis queries
+- ✅ 10 database views
+- ✅ 5 stored procedures
+- ✅ 2 database triggers
+- ✅ 6 explicit performance indexes
+- ✅ Initial database integrity and functionality testing
+
+**Remaining:** Clean database installation and recreation testing.
 
 ---
 

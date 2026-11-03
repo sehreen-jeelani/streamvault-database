@@ -2,12 +2,12 @@
 
 ## 1. Project Overview
 
-StreamVault is a MySQL relational database project modeling the backend of a subscription-based streaming platform. It focuses on database design, relational modeling, SQL querying, database automation, performance optimization, and business analysis across a 17-table schema (16 core tables and 1 activity audit table).
+StreamVault is a MySQL relational database project modeling the backend of a subscription-based streaming platform. It focuses on database design, relational modeling, SQL querying, database automation, performance optimization, and business analysis across a 17 table schema (16 core tables and 1 activity audit table).
 
 ### Key Objectives
 
 - **Multi-Profile Tracking:** Isolates viewing history, ratings, and watchlists per profile under a single master user account.
-- **Database Automation:** Uses views, stored procedures, and audit triggers to implement database-level operations.
+- **Database Automation:** Uses views, stored procedures, and audit triggers to implement database level operations.
 - **Performance Tuning:** Implements explicit indexes to support frequently used queries.
 ---
 
@@ -32,7 +32,7 @@ The system comprises **17 tables** (16 core tables and one audit log) in the `st
 - **Database Views:** 10 views implemented.
 - **Stored Procedures:** 5 procedures written.
 - **Triggers and Indexes:** 2 triggers and 6 explicit indexes.
-- **Validation:** Final project-wide integrity checks are pending.
+- **Validation:** Database object inventory, current-data integrity checks, view and stored procedure execution, and trigger functionality tests have been completed. Clean database installation testing remains pending.
 
 ---
 
@@ -63,7 +63,7 @@ The system comprises **17 tables** (16 core tables and one audit log) in the `st
 - `sp_get_top_rated_cont`
 
 **Triggers:**
-- `after_rating_insert`: Records rating-related activity in the audit table.
+- `after_rating_insert`: Records rating related activity in the audit table.
 - `after_payment_update`: Records payment status changes in the audit table.
 
 ### Query Performance Indexing
@@ -75,7 +75,7 @@ The system comprises **17 tables** (16 core tables and one audit log) in the `st
 | `idx_subscription_user_status` | `subscription(user_id, status)` | Supports subscription lookups by user and status. |
 | `idx_watch_history_profile_time` | `watch_history(profile_id, watched_at)` | Supports retrieving a profile's viewing history by time. |
 | `idx_ratings_content` | `ratings(content_id)` | Supports content-related rating queries. |
-| `idx_payment_status_date` | `payment(status, payment_date)` | Supports filtering payment records by status and date. |
+| `idx_payment_status_date` | `payment(pay_status, paid_at)` | Supports filtering payment records by status and payment date. |
 
 ---
 
