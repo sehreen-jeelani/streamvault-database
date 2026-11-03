@@ -1,4 +1,4 @@
-CREATE DATABASE streamvault;
+CREATE DATABASE IF NOT EXISTS streamvault;
 USE streamvault;
 SELECT DATABASE();
 

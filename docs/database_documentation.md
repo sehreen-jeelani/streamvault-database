@@ -2,14 +2,13 @@
 
 ## 1. Project Overview
 
-StreamVault is a MySQL relational database backend designed for a subscription-based streaming platform (Netflix style). It models multi profile user management, content cataloging, viewing history tracking, and automated billing audits.
+StreamVault is a MySQL relational database project modeling the backend of a subscription-based streaming platform. It focuses on database design, relational modeling, SQL querying, database automation, performance optimization, and business analysis across a 17-table schema (16 core tables and 1 activity audit table).
 
 ### Key Objectives
 
 - **Multi-Profile Tracking:** Isolates viewing history, ratings, and watchlists per profile under a single master user account.
 - **Database Automation:** Uses views, stored procedures, and audit triggers to implement database-level operations.
 - **Performance Tuning:** Implements explicit indexes to support frequently used queries.
-
 ---
 
 ## 2. System Architecture & Components
