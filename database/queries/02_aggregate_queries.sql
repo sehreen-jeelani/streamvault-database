@@ -22,11 +22,13 @@ SELECT type,COUNT(*) AS Group_count FROM CONTENT GROUP BY type ;
 
 SELECT country,COUNT(*) AS Group_count FROM CONTENT GROUP BY country;
 
-SELECT subscription_plans.plan_name,COUNT(user.user_id)
-FROM user
-INNER JOIN subscription ON user.user_id = subscription.user_id
-INNER JOIN subscription_plans ON subscription.plan_id = subscription_plans.plan_id
-GROUP BY subscription_plans.plan_name;
+SELECT sp.plan_name,
+COUNT(DISTINCT u.user_id) AS user_count
+FROM subscription_plans sp
+LEFT JOIN subscription s ON sp.plan_id = s.plan_id
+LEFT JOIN user u ON s.user_id = u.user_id
+GROUP BY sp.plan_id, sp.plan_name
+ORDER BY user_count DESC;
 
 SELECT user.user_id, COUNT(profiles.profile_id) AS profile_count
 FROM user
@@ -110,11 +112,14 @@ WHERE pay_status = 'Successful';
 
 SELECT AVG(amount) FROM payment;
 
-SELECT subscription_plans.plan_name,SUM(payment.amount) AS total_revenue
-FROM payment
-INNER JOIN subscription ON payment.subs_id = subscription.subs_id
-INNER JOIN subscription_plans ON subscription.plan_id = subscription_plans.plan_id
-GROUP BY subscription_plans.plan_name;
+SELECT sp.plan_name,
+SUM(p.amount) AS total_successful_revenue
+FROM payment p
+INNER JOIN subscription s ON p.subs_id = s.subs_id
+INNER JOIN subscription_plans sp ON s.plan_id = sp.plan_id
+WHERE p.pay_status = 'Successful'
+GROUP BY sp.plan_id, sp.plan_name
+ORDER BY total_successful_revenue DESC;
 
 SELECT pay_method,COUNT(pay_status) FROM payment
 WHERE pay_status = 'Successful' 

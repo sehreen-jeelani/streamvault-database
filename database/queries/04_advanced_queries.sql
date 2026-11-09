@@ -105,15 +105,18 @@ SELECT c.title, w.watchCOUNT
 FROM content c
 JOIN WatchCOUNT w ON c.content_id = w.content_id;
 
-WITH profit AS (
+WITH subscription_revenue AS (
 SELECT subs_id, SUM(amount) AS total_revenue
 FROM payment
 WHERE pay_status = 'Successful'
 GROUP BY subs_id)
-SELECT subscription_plans.plan_name,profit.total_revenue
-FROM profit
-INNER JOIN subscription ON profit.subs_id = subscription.subs_id
-INNER JOIN subscription_plans ON subscription.plan_id = subscription_plans.plan_id;
+SELECT sp.plan_name,
+SUM(sr.total_revenue) AS total_revenue
+FROM subscription_revenue sr
+INNER JOIN subscription s ON sr.subs_id = s.subs_id
+INNER JOIN subscription_plans sp ON s.plan_id = sp.plan_id
+GROUP BY sp.plan_id, sp.plan_name
+ORDER BY total_revenue DESC;
 
 WITH profileCOUNT AS(
 SELECT user_id, COUNT(profile_id) AS profile_count

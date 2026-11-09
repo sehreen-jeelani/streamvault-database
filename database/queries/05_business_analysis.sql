@@ -3,9 +3,11 @@ USE streamvault;
 SELECT COUNT(*) FROM user;
 SELECT COUNT(*) FROM profiles;
 
-SELECT AVG(profile_count) AS average_profiles_per_user
-FROM (SELECT user_id, COUNT(*) AS profile_count
-FROM profiles GROUP BY user_id) AS user_profiles;
+SELECT ROUND(AVG(profile_count), 2) AS average_profiles_per_user
+FROM (SELECT u.user_id, COUNT(p.profile_id) AS profile_count
+FROM user u
+LEFT JOIN profiles p ON u.user_id = p.user_id
+GROUP BY u.user_id) AS user_profiles;
 
 SELECT COUNT(DISTINCT user_id) AS active_subs_users
 FROM subscription
@@ -18,8 +20,9 @@ LEFT JOIN subscription ON subscription.plan_id = subscription_plans.plan_id
 GROUP BY subscription_plans.plan_id,subscription_plans.plan_name;
 
 SELECT ROUND(COUNT(DISTINCT CASE
-WHEN s.status = 'Active' THEN s.user_id
-END) * 100.0 / COUNT(u.user_id),2) AS active_subs_percent
+WHEN s.status = 'Active' THEN u.user_id
+END) * 100.0 /
+NULLIF(COUNT(DISTINCT u.user_id), 0),2) AS active_subs_percent
 FROM user u
 LEFT JOIN subscription s ON u.user_id = s.user_id;
 
