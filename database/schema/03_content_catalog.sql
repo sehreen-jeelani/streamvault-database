@@ -33,6 +33,7 @@ content_id INT NOT NULL,
 rel_date DATE,
 duration_min INT,
 FOREIGN KEY (content_id) REFERENCES content(content_id),
+UNIQUE KEY uq_episode_content (content_id, epi_id),
 UNIQUE (content_id, season_no, epi_no)
 );
 

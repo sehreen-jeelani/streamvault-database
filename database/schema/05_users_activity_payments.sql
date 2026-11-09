@@ -9,7 +9,9 @@ watched_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 watch_dura_min INT,
 completed ENUM ("Yes","No"),
 FOREIGN KEY (content_id) REFERENCES content(content_id),
-FOREIGN KEY (epi_id) REFERENCES episodes(epi_id),
+CONSTRAINT fk_watch_hist_epi_cont
+FOREIGN KEY (content_id, epi_id)
+REFERENCES episodes(content_id, epi_id),
 FOREIGN KEY (profile_id) REFERENCES profiles(profile_id)
 );
 
@@ -41,7 +43,9 @@ paid_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 pay_status ENUM("Successful","Failed","Refunded") NOT NULL,
 pay_method ENUM("Online","Offline") NOT NULL,
 FOREIGN KEY (user_id) REFERENCES user(user_id),
-FOREIGN KEY (subs_id) REFERENCES subscription(subs_id)
+CONSTRAINT fk_payment_subscription_owner
+FOREIGN KEY (user_id, subs_id)
+REFERENCES subscription(user_id, subs_id)
 );
 
 

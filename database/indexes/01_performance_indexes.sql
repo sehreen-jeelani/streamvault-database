@@ -12,9 +12,5 @@ ON subscription(user_id, status);
 CREATE INDEX idx_watch_history_profile_time
 ON watch_history(profile_id, watched_at);
 
-CREATE INDEX idx_ratings_content
-ON ratings(content_id);
-
 CREATE INDEX idx_payment_status_date
 ON payment(pay_status, paid_at);
-

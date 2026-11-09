@@ -35,6 +35,7 @@ start_date DATETIME DEFAULT CURRENT_TIMESTAMP,
 end_date DATETIME NOT NULL,
 status ENUM("Active","Cancelled","Expired") NOT NULL,
 FOREIGN KEY (user_id) REFERENCES user(user_id),
-FOREIGN KEY (plan_id) REFERENCES subscription_plans(plan_id)
+FOREIGN KEY (plan_id) REFERENCES subscription_plans(plan_id),
+UNIQUE KEY uq_subscription_owner (user_id, subs_id)
 );
 
