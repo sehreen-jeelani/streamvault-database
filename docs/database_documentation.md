@@ -164,14 +164,16 @@ UNIQUE KEY uq_episode_content (content_id, epi_id)
 
 ### 5.4 Check Constraints and Validation Rules
 
-Check constraints and other column-level restrictions help maintain valid data.
+Check constraints enforce important data-integrity rules directly at the database level.
 
-Examples include:
+The following rules are enforced:
 
-- Ratings restricted to values between 1 and 5.
-- Content types restricted to supported categories such as `Movie` and `TV Show`.
-- Watch durations restricted to valid values.
-- Subscription periods validated to prevent invalid date ranges.
+- Ratings are restricted to values between 1 and 5.
+- Watch durations must be non-negative. `NULL` values are permitted.
+- Subscription end dates must be later than their start dates.
+- Content types are restricted to supported categories such as `Movie` and `TV Show` through the column's `ENUM` definition.
+
+These constraints prevent invalid values from being inserted or updated, rather than relying only on application-level validation.
 
 ### 5.5 Composite Foreign Keys
 
@@ -387,6 +389,8 @@ The following checks returned zero violations:
 - Movies containing episode records.
 - Invalid watch durations.
 - Invalid subscription periods.
+
+In addition to validation queries, database-level CHECK constraints were tested by attempting invalid updates. The database correctly rejected invalid subscription date ranges and negative watch durations.
 
 ### 12.3 Composite Foreign Key Testing
 

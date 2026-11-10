@@ -8,6 +8,8 @@ epi_id INT,
 watched_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 watch_dura_min INT,
 completed ENUM ("Yes","No"),
+CONSTRAINT chk_watch_duration_nonnegative
+CHECK (watch_dura_min IS NULL OR watch_dura_min >= 0),
 FOREIGN KEY (content_id) REFERENCES content(content_id),
 CONSTRAINT fk_watch_hist_epi_cont
 FOREIGN KEY (content_id, epi_id)

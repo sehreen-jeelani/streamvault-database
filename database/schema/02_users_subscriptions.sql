@@ -31,11 +31,13 @@ CREATE TABLE subscription(
 subs_id INT AUTO_INCREMENT PRIMARY KEY,
 user_id INT NOT NULL,
 plan_id INT NOT NULL,
-start_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+start_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 end_date DATETIME NOT NULL,
 status ENUM("Active","Cancelled","Expired") NOT NULL,
 FOREIGN KEY (user_id) REFERENCES user(user_id),
 FOREIGN KEY (plan_id) REFERENCES subscription_plans(plan_id),
-UNIQUE KEY uq_subscription_owner (user_id, subs_id)
+UNIQUE KEY uq_subscription_owner (user_id, subs_id),
+CONSTRAINT chk_subscription_date_range
+CHECK (end_date > start_date)
 );
 
