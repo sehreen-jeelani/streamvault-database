@@ -92,31 +92,30 @@ The database uses one-to-many, many-to-many, and optional relationships to repre
 
 The major relationships in the database include:
 
-- `user` â”€â”€1:Nâ”€â”€> `profiles`
-- `user` â”€â”€1:Nâ”€â”€> `subscription`
-- `subscription_plans` â”€â”€1:Nâ”€â”€> `subscription`
-- `user` â”€â”€1:Nâ”€â”€> `payment`
-- `subscription` â”€â”€1:Nâ”€â”€> `payment`
-- `content` â”€â”€1:Nâ”€â”€> `episodes`
-- `content` â”€â”€N:Mâ”€â”€> `genres` through `content_genres`
-- `content` â”€â”€N:Mâ”€â”€> `actors` through `content_actor`
-- `content` â”€â”€N:Mâ”€â”€> `director` through `content_directors`
-- `profiles` â”€â”€1:Nâ”€â”€> `watch_history`
-- `content` â”€â”€1:Nâ”€â”€> `watch_history`
-- `profiles` â”€â”€1:Nâ”€â”€> `ratings`
-- `content` â”€â”€1:Nâ”€â”€> `ratings`
-- `profiles` â”€â”€1:Nâ”€â”€> `watchlist`
-- `content` â”€â”€1:Nâ”€â”€> `watchlist`
+- `user` --1:N--> `profiles`
+- `user` --1:N--> `subscription`
+- `subscription_plans` --1:N--> `subscription`
+- `user` --1:N--> `payment`
+- `subscription` --1:N--> `payment`
+- `content` --1:N--> `episodes`
+- `content` --N:M--> `genres` through `content_genres`
+- `content` --N:M--> `actors` through `content_actor`
+- `content` --N:M--> `director` through `content_directors`
+- `profiles` --1:N--> `watch_history`
+- `content` --1:N--> `watch_history`
+- `profiles` --1:N--> `ratings`
+- `content` --1:N--> `ratings`
+- `profiles` --1:N--> `watchlist`
+- `content` --1:N--> `watchlist`
 
 The `watch_history` table also has an optional relationship with `episodes`:
 
-```text
-profiles â”€â”€1:Nâ”€â”€> watch_history â”€â”€N:1â”€â”€> content
-                       â”‚
-                       â””â”€â”€N:1 (optional)â”€â”€> episodes
-```
+    profiles --1:N--> watch_history --N:1--> content
+                              |
+                              +--N:1 (optional)--> episodes
 
-The episode reference is optional because movie viewing records do not require an episode. When an episode is specified, a composite foreign key ensures that the episode belongs to the same content item referenced by the viewing record.
+The composite foreign key ensures that an episode referenced
+in `watch_history` belongs to the same content item.
 
 ---
 
@@ -430,49 +429,49 @@ The project is organized into separate directories for schema definitions, sampl
 
 ```text
 streamvault-database/
-â”‚
-â”œâ”€â”€ database/
-â”‚   â”œâ”€â”€ schema/
-â”‚   â”‚   â”œâ”€â”€ 01_create_dbs.sql
-â”‚   â”‚   â”œâ”€â”€ 02_users_subscriptions.sql
-â”‚   â”‚   â”œâ”€â”€ 03_content_catalog.sql
-â”‚   â”‚   â”œâ”€â”€ 04_cast_creators.sql
-â”‚   â”‚   â””â”€â”€ 05_users_activity_payments.sql
-â”‚   â”‚
-â”‚   â”œâ”€â”€ data/
-â”‚   â”‚   â”œâ”€â”€ 01_users.sql
-â”‚   â”‚   â”œâ”€â”€ 02_subscriptions.sql
-â”‚   â”‚   â”œâ”€â”€ 03_content.sql
-â”‚   â”‚   â”œâ”€â”€ 04_cast_creators.sql
-â”‚   â”‚   â””â”€â”€ 05_activity_payments.sql
-â”‚   â”‚
-â”‚   â”œâ”€â”€ views/
-â”‚   â”‚   â””â”€â”€ 01_content_catalog_view.sql
-â”‚   â”‚
-â”‚   â”œâ”€â”€ procedures/
-â”‚   â”‚   â””â”€â”€ 01_content_procedures.sql
-â”‚   â”‚
-â”‚   â”œâ”€â”€ triggers/
-â”‚   â”‚   â””â”€â”€ 01_activity_triggers.sql
-â”‚   â”‚
-â”‚   â”œâ”€â”€ indexes/
-â”‚   â”‚   â””â”€â”€ 01_performance_indexes.sql
-â”‚   â”‚
-â”‚   â””â”€â”€ queries/
-â”‚       â”œâ”€â”€ 01_basic_queries.sql
-â”‚       â”œâ”€â”€ 02_aggregate_queries.sql
-â”‚       â”œâ”€â”€ 03_join_queries.sql
-â”‚       â”œâ”€â”€ 04_advanced_queries.sql
-â”‚       â””â”€â”€ 05_business_analysis.sql
-â”‚
-â”œâ”€â”€ docs/
-â”‚   â””â”€â”€ database_documentation.md
-â”‚
-â”œâ”€â”€ er-diagram/
-â”‚   â””â”€â”€ streamvault_erd.png
-â”‚
-â”œâ”€â”€ README.md
-â””â”€â”€ .gitignore
+|
++-- database/
+|   +-- schema/
+|   |   +-- 01_create_dbs.sql
+|   |   +-- 02_users_subscriptions.sql
+|   |   +-- 03_content_catalog.sql
+|   |   +-- 04_cast_creators.sql
+|   |   +-- 05_users_activity_payments.sql
+|   |
+|   +-- data/
+|   |   +-- 01_users.sql
+|   |   +-- 02_subscriptions.sql
+|   |   +-- 03_content.sql
+|   |   +-- 04_cast_creators.sql
+|   |   +-- 05_activity_payments.sql
+|   |
+|   +-- views/
+|   |   +-- 01_content_catalog_view.sql
+|   |
+|   +-- procedures/
+|   |   +-- 01_content_procedures.sql
+|   |
+|   +-- triggers/
+|   |   +-- 01_activity_triggers.sql
+|   |
+|   +-- indexes/
+|   |   +-- 01_performance_indexes.sql
+|   |
+|   +-- queries/
+|       +-- 01_basic_queries.sql
+|       +-- 02_aggregate_queries.sql
+|       +-- 03_join_queries.sql
+|       +-- 04_advanced_queries.sql
+|       +-- 05_business_analysis.sql
+|
++-- docs/
+|   +-- database_documentation.md
+|
++-- er-diagram/
+|   +-- streamvault_erd.png
+|
++-- README.md
++-- .gitignore
 ```
 
 ### Directory Descriptions
@@ -559,11 +558,6 @@ Overall, StreamVault serves as a practical demonstration of database design, SQL
 
 ---
 
-**Project Repository:**
-https://github.com/sehreen-jeelani/streamvault-database
-
-**Documentation:**
-`docs/database_documentation.md`
-
 **Entity-Relationship Diagram:**
-`er-diagram/streamvault_erd.png`
+
+[View StreamVault ER Diagram](../er-diagram/streamvault_erd.png)
